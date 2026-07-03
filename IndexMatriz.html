@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Sistema de Rematrícula - Engenharia Mecânica</title>
+
+<link rel="stylesheet" href="style.css">
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- SEU SCRIPT -->
+<script src="script.js" defer></script>
+</head>
+
+<body>
+
+<div class="topo">
+
+<img
+src="Imagens/logo.png"
+alt="Logo"
+class="logoTopo"
+>
+
+<div class="tituloArea">
+
+<h1>
+Grade Curricular – Engenharia Mecânica
+</h1>
+
+<p>
+Sistema de Rematrícula Acadêmica
+</p>
+
+</div>
+
+</div>
+
+<div class="legenda">
+  <span class="leg-item aprovado">
+    <span class="cor"></span> Aprovado
+  </span>
+
+  <span class="leg-item aprovado-reprovacao">
+    <span class="cor"></span> Aprovado após reprovação
+  </span>
+
+  <span class="leg-item aproveitamento">
+    <span class="cor"></span> Aproveitamento
+  </span>
+
+  <span class="leg-item reprovado">
+    <span class="cor"></span> Reprovado
+  </span>
+</div>
+
+
+
+<input type="file" id="arquivo" accept="application/pdf">
+
+<button id="btnLimpar" type="button" onclick="LimparTeste()" disabled>Limpar  
+</button>
+<button id="btnMatricula" type="button" onclick="Matricula()" disabled> Fazer Matricula  
+</button>
+
+<hr>
+
+<div class="grid-container">
+<div class="header"><h3>Matriz do Curso</h3></div>
+<div class="coluna">
+  <h2>1º Semestre</h2>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3772">
+    Calculo I    
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3773">
+    Fisica I
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3833">
+    Intro a Eng Mecanica
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3774">
+    Desenho Tecnico
+  </label><br>
+
+   <label>
+    <input type="checkbox" data-codigo="SUP.3775">
+    Elementos de Maquinas
+  </label><br>
+
+   <label>
+    <input type="checkbox" data-codigo="SUP.3776">
+    Info Instrumental
+  </label><br>
+</div>
+
+  <!----******************************************************-->
+<!----*******************2° SEMESTRE****************************-->
+<div class="coluna">
+  <h2>2º Semestre</h2>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3831">
+    Calculo II   
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3778">
+    Fisica II
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3779">
+    Algebra Linear e Geom. Analitica
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3780">
+    Desenho Computacional I
+  </label><br>
+
+   <label>
+    <input type="checkbox" data-codigo="SUP.3781">
+    Metrologia
+  </label><br>
+
+   <label>
+    <input type="checkbox" data-codigo="SUP.3782">
+    Quimica Geral
+  </label><br>
+ 
+</div>
+
+
+<!----******************************************************-->
+
+<!----*******************3° SEMESTRE****************************-->
+<div class="coluna">
+  <h2>3º Semestre</h2>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3783">
+    Calculo III  
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3784">
+    Fisica III
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3785">
+    Sustentabilidade e Respons. Socioambiental
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3786">
+    Ciencias dos Materiais
+  </label><br>
+
+   <label>
+    <input type="checkbox" data-codigo="SUP.3787">
+    Resistencia dos Materiais
+  </label><br>
+
+   <label>
+    <input type="checkbox" data-codigo="SUP.3788">
+    Desenho Computacional II
+  </label><br>
+</div>
+
+<!----******************************************************-->
+
+<!----*******************4° SEMESTRE****************************-->
+<div class="coluna">
+  <h2>4º Semestre</h2>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3789">
+    Mecanica dos Fluidos
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3790">
+    Termodinamica Aplicada 
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3791">
+    Eng. Economica
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3792">
+    Ensaio dos Materiais e Metalog
+  </label><br>
+
+    <label>
+    <input type="checkbox" data-codigo="SUP.3793">
+    Eletricidade Aplicada
+  </label><br>
+
+   <label>
+    <input type="checkbox" data-codigo="SUP.3794">
+    Algoritimos de Programacao
+  </label><br>
+
+   <label>
+    <input type="checkbox" data-codigo="SUP.3795">
+    Projeto Integrador I
+  </label><br>
+</div>
+
+<!----******************************************************-->
+  
+ <!----*******************5° SEMESTRE****************************-->
+<div class="coluna">
+  <h2>5º Semestre</h2>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3796">
+    Calculo Numerico
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3797">
+    Maquinas Termicas
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3798">
+    Maquinas de Fluxo
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3799">
+    Mecanismos
+  </label><br>
+
+    <label>
+    <input type="checkbox" data-codigo="SUP.3800">
+    Usinagem I
+  </label><br>
+
+   <label>
+    <input type="checkbox" data-codigo="SUP.3801">
+    Acionamentos Eletricos e Motores
+  </label><br>
+ 
+</div>
+
+<!----******************************************************-->
+ <!----*******************6° SEMESTRE****************************-->
+<div class="coluna">
+  <h2>6º Semestre</h2>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3802">
+    Estatistica e Probabilidade
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3803">
+    Transferencia de Calor e Massa
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3804">
+    Processos Metalurgicos
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3805">
+    Usinagem II
+  </label><br>
+
+    <label>
+    <input type="checkbox" data-codigo="SUP.3806">
+    Soldagem e Tratamentos Termicos
+  </label><br>
+
+   <label>
+    <input type="checkbox" data-codigo="SUP.3807">
+    Introducao a Automacao
+  </label><br>
+
+   <label>
+    <input type="checkbox" data-codigo="SUP.3808">
+    Projeto Integrador II
+  </label><br>
+</div>
+
+<!----******************************************************-->
+  <!----*******************7° SEMESTRE****************************-->
+<div class="coluna">
+  <h2>7º Semestre</h2>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3809">
+    Refrigeracao e Climatizacao
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3810">
+    Conservacao de Produtos
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3811">
+    Trocadores de Calor
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3812">
+    SHP I
+  </label><br>
+
+    <label>
+    <input type="checkbox" data-codigo="SUP.3813">
+    Mecanica Vibratoria
+  </label><br>
+
+   <label>
+    <input type="checkbox" data-codigo="SUP.3814">
+    Automacao Industrial I
+  </label><br>
+ 
+</div>
+
+<!----******************************************************-->
+   <!----*******************8° SEMESTRE****************************-->
+<div class="coluna">
+  <h2>8º Semestre</h2>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3815">
+    Ingles Instrumental
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3816">
+    Refrigeracao Comercial
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3817">
+    Climatizacao I
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3818">
+    SHP II
+  </label><br>
+
+    <label>
+    <input type="checkbox" data-codigo="SUP.3819">
+    Manutencao Industrial
+  </label><br>
+
+   <label>
+    <input type="checkbox" data-codigo="SUP.3821">
+    Automacao Industrial II
+  </label><br>
+
+   <label>
+    <input type="checkbox" data-codigo="SUP.3822">
+    Projeto Integrador III
+  </label><br>
+</div>
+
+<!----******************************************************-->
+  <!----*******************9° SEMESTRE****************************-->
+<div class="coluna">
+  <h2>9º Semestre</h2>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3823">
+    Planejamento TCC
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3824">
+    Topicos Avancados em Eletronica e Automacao
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3825">
+    Climatizacao II
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3826">
+    Eficiencia Energetica Aplicada
+  </label><br>
+
+    <label>
+    <input type="checkbox" data-codigo="SUP.3827">
+    Refrigeração Industrial
+  </label><br>
+
+   <label>
+    <input type="checkbox" data-codigo="SUP.3828">
+    Disciplina Eletiva
+  </label><br>
+ 
+</div>
+
+<!----******************************************************-->
+   <!----*******************10° SEMESTRE****************************-->
+<div class="coluna">
+  <h2>10º Semestre</h2>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3829">
+    TCC
+  </label><br>
+
+  <label>
+    <input type="checkbox" data-codigo="SUP.3830">
+    Portugues Instrumental
+  </label><br>
+</div>
+
+ <div id="resultadoSUP"></div>
+
+
+ 
+
+</body>
+</html>
