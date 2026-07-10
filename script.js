@@ -11,6 +11,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 
 let disciplinasConcluidas=[];
 let nomeAluno="";
+let horarios = {};
+let modoAdmin = false;
 
 /* =====================================================
    PRÉ-REQUISITOS
@@ -96,7 +98,9 @@ const prerequisitos={
    DOM
 ===================================================== */
 
-document.addEventListener("DOMContentLoaded",()=>{
+document.addEventListener(
+"DOMContentLoaded",
+()=>{
 
 document.querySelectorAll(
 'input[type="checkbox"]'
@@ -115,46 +119,129 @@ document.getElementById(
 "btnMatricula"
 ).disabled=true;
 
-/* ao selecionar arquivo, lê automaticamente */
-
-document
-.getElementById(
-"arquivo"
-)
-.addEventListener(
-"change",
-lerHistoricoPDF
+}
 );
 
-});
 
+fetch("horarios.json")
+    .then(response => response.json())
+    .then(data => {
+
+        horarios = data;
+
+        inserirDias();
+
+    })
+    .catch(erro => console.error("Erro ao carregar horarios.json:", erro));
 
 /* =====================================================
-   LER HISTÓRICO
+   BUSCAR HISTÓRICO
 ===================================================== */
 
-async function lerHistoricoPDF(){
+async function buscarHistorico(){
 
-const arquivo=
-document.getElementById(
-"arquivo"
-).files[0];
+const codigo=
+document
+.getElementById(
+"codigoAluno"
+)
+.value
+.trim();
 
-if(!arquivo){
+if(!codigo){
 
 alert(
-"Selecione um histórico PDF."
+"📚 Digite sua matrícula."
 );
 
 return;
 
 }
 
-nomeAluno=
-arquivo.name
-.replace(".pdf","")
-.replace(".PDF","")
-.trim();
+// Cursor de espera
+document.body.style.cursor = "wait";
+
+try{
+
+const caminho=
+`./Alunos/${codigo}.pdf`;
+
+console.log(
+"Buscando:",
+caminho
+);
+
+const resposta=
+await fetch(
+caminho
+);
+
+if(
+!resposta.ok
+){
+
+throw new Error(
+"Arquivo não encontrado"
+);
+
+}
+
+const blob=
+await resposta.blob();
+
+const arquivo=
+new File(
+[blob],
+`${codigo}.pdf`,
+{
+type:"application/pdf"
+}
+);
+
+await lerHistoricoPDF(
+arquivo
+);
+
+document.getElementById(
+"btnLimpar"
+).disabled=false;
+
+document.getElementById(
+"btnMatricula"
+).disabled=false;
+
+document.body.style.cursor = "default";
+alert(
+   
+"✅ Histórico carregado."
+);
+
+}
+catch(e){
+
+console.log(
+"Erro:",
+e
+);
+
+alert(
+"⚠️ Histórico não encontrado."
+);
+
+}
+
+}
+
+
+/* =====================================================
+   LER HISTÓRICO
+===================================================== */
+
+async function lerHistoricoPDF(
+arquivo
+){
+
+if(!arquivo) return;
 
 try{
 
@@ -163,22 +250,53 @@ await lerPDF(
 arquivo
 );
 
-document.querySelectorAll(
-'input[type="checkbox"]'
-).forEach(cb=>{
+nomeAluno=
+extrairNomeAluno(
+palavras
+);
 
-cb.disabled=false;
+document.getElementById(
+"dadosAluno"
+).innerHTML=
+`👤 Aluno: <strong>${nomeAluno}</strong>`;
+/* procura nome do aluno dentro do PDF */
+
+nomeAluno=
+extrairNomeAluno(
+palavras
+);
+
+/* atualiza tela */
+
+document.getElementById(
+"dadosAluno"
+).innerHTML=
+`👤 Aluno: <strong>${nomeAluno}</strong>`;
+
+
+/* limpa os checkboxes */
+
+document.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
+
+    cb.checked = false;
+
+    // Todas as disciplinas começam habilitadas
+    cb.disabled = false;
+
+    const label = cb.parentElement;
+
+    label.classList.remove(
+        "concluida",
+        "reprovada",
+        "aproveitamento",
+        "aprovado-com-reprovacao"
+    );
 
 });
 
 const resultados=
 extrairSituacoesDisciplinas(
 palavras
-);
-
-console.log(
-"Resultados:",
-resultados
 );
 
 marcarCheckboxes(
@@ -193,11 +311,10 @@ document.getElementById(
 "btnMatricula"
 ).disabled=false;
 
+}
+catch(e){
 
-
-}catch(e){
-
-console.error(e);
+console.log(e);
 
 alert(
 "Erro ao ler PDF."
@@ -207,7 +324,49 @@ alert(
 
 }
 
+/* =====================================================
+   EXTRAI NOME DO ALUNO
+===================================================== */
 
+function extrairNomeAluno(
+palavras
+){
+
+const textoCompleto=
+palavras.join(" ");
+
+const regex=
+/([A-ZÀ-Ú][A-Za-zÀ-ú\s]+)\s*\(\d{5}[A-Z]{2}\.[A-Z]{2}\d+\)/i;
+
+const resultado=
+textoCompleto.match(
+regex
+);
+
+if(
+resultado &&
+resultado[1]
+){
+
+let nome=
+resultado[1]
+.trim();
+
+/* remove palavras indesejadas */
+
+nome=
+nome.replace(
+/^(Matriculado|MATRICULADO|Aluno|ALUNO)\s+/i,
+""
+);
+
+return nome;
+
+}
+
+return "Aluno não identificado";
+
+}
 /* =====================================================
    LEITOR PDF
 ===================================================== */
@@ -388,19 +547,19 @@ disciplinasConcluidas=[];
 
 /* limpa estados antigos */
 
-document.querySelectorAll(
-'input[type="checkbox"]'
-).forEach(cb=>{
+document.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
 
-cb.checked=false;
+    cb.checked = false;
+    cb.disabled = false;
 
-const label=
-cb.parentElement;
+    const label = cb.parentElement;
 
-label.classList.remove(
-"concluida",
-"reprovada"
-);
+    label.classList.remove(
+        "concluida",
+        "reprovada",
+        "aproveitamento",
+        "aprovado-com-reprovacao"
+    );
 
 });
 
@@ -426,18 +585,22 @@ return;
 const label=
 checkbox.parentElement;
 
-const disciplina=
-label.textContent
-.trim();
+const disciplina = Array.from(label.childNodes)
+    .filter(node => node.nodeType === Node.TEXT_NODE)
+    .map(node => node.textContent.trim())
+    .join(" ")
+    .trim();
 
 if(
 status==="aprovado" ||
 status==="aproveitamento"
 ){
 
-checkbox.checked=true;
+checkbox.checked = true;
 
-checkbox.disabled=true;
+if(!modoAdmin){
+    checkbox.disabled = true;
+}
 
 label.classList.add(
 "concluida"
@@ -469,156 +632,265 @@ disciplinasConcluidas
 }
 
 /* =====================================================
+   VERIFICA CONFLITOS DE HORÁRIO
+===================================================== */
+function verificarConflitosHorarios(selecionadas){
+
+    let conflitos=[];
+
+    for(let i=0;i<selecionadas.length;i++){
+
+        const codigo1=selecionadas[i].dataset.codigo;
+
+        if(!horarios[codigo1]) continue;
+
+        const dia1=horarios[codigo1].dia.trim().substring(0,3).toUpperCase();
+
+        const horario1=horarios[codigo1].horario
+            .replace(/\s+/g,"")
+            .toUpperCase();
+
+        for(let j=i+1;j<selecionadas.length;j++){
+
+            const codigo2=selecionadas[j].dataset.codigo;
+
+            if(!horarios[codigo2]) continue;
+
+            const dia2=horarios[codigo2].dia.trim().substring(0,3).toUpperCase();
+
+            const horario2=horarios[codigo2].horario
+                .replace(/\s+/g,"")
+                .toUpperCase();
+
+            if(
+                dia1===dia2 &&
+                horario1===horario2
+            ){
+
+                const nome1=Array.from(selecionadas[i].parentElement.childNodes)
+                .filter(n=>n.nodeType===Node.TEXT_NODE)
+                .map(n=>n.textContent.trim())
+                .join(" ")
+                .trim();
+
+                const nome2=Array.from(selecionadas[j].parentElement.childNodes)
+                .filter(n=>n.nodeType===Node.TEXT_NODE)
+                .map(n=>n.textContent.trim())
+                .join(" ")
+                .trim();
+
+                conflitos.push({
+
+                    disciplina1:nome1,
+                    disciplina2:nome2,
+                    dia:horarios[codigo1].dia.trim(),
+                    horario:horarios[codigo1].horario.trim()
+
+                });
+
+            }
+
+        }
+
+    }
+
+    return conflitos;
+
+}
+
+/* =====================================================
    MATRÍCULA
 ===================================================== */
 function Matricula(){
 
-const selecionadas=
-Array.from(
-document.querySelectorAll(
-'input[type="checkbox"]:checked:not(:disabled)'
-)
-);
+// ==========================================
+// Atualiza as disciplinas concluídas
+// (inclui as marcadas pelo administrador)
+// ==========================================
 
-if(
-selecionadas.length===0
-){
+disciplinasConcluidas = [];
 
-alert(
-"📚 Selecione pelo menos uma disciplina para rematrícula."
-);
+document
+.querySelectorAll('input[type="checkbox"]:checked')
+.forEach(cb=>{
 
-return;
+    const disciplina = Array.from(cb.parentElement.childNodes)
+        .filter(node=>node.nodeType===Node.TEXT_NODE)
+        .map(node=>node.textContent.trim())
+        .join(" ")
+        .trim();
 
-}
-
-let liberadas=[];
-let bloqueadas=[];
-
-selecionadas.forEach(cb=>{
-
-const disciplina=
-cb.parentElement
-.textContent
-.trim();
-
-const reqs=
-prerequisitos[
-disciplina
-];
-
-if(!reqs){
-
-liberadas.push(
-disciplina
-);
-
-return;
-
-}
-
-const pendentes=
-reqs.filter(
-req=>
-!disciplinasConcluidas.includes(
-req
-)
-);
-
-if(
-pendentes.length===0
-){
-
-liberadas.push(
-disciplina
-);
-
-}else{
-
-bloqueadas.push({
-
-disciplina,
-pendencias:pendentes
+    disciplinasConcluidas.push(disciplina);
 
 });
 
-}
+    // ==========================================
+    // Disciplinas selecionadas para matrícula
+    // ==========================================
 
-});
+console.log("Disciplinas concluídas:", disciplinasConcluidas);
 
-/* ===== Console ===== */
+    const selecionadas = Array.from(
+        document.querySelectorAll(
+            'input[type="checkbox"]:checked:not(:disabled)'
+        )
+    );
 
-console.clear();
+    // Nenhuma disciplina selecionada
+    if(selecionadas.length === 0){
 
-console.log(
-"======== DISCIPLINAS LIBERADAS ========"
-);
+        alert("📚 Selecione pelo menos uma disciplina para rematrícula.");
+        return;
 
-liberadas.forEach(d=>{
+    }
 
-console.log(
-"✓",
-d
-);
+    /* ==========================================
+       VERIFICA CONFLITO DE HORÁRIOS
+    ========================================== */
 
-});
+    const conflitos = verificarConflitosHorarios(selecionadas);
 
-console.log(
-"======== DISCIPLINAS BLOQUEADAS ========"
-);
+    if(conflitos.length > 0){
 
-bloqueadas.forEach(d=>{
+        let mensagem = "⚠ Existem conflitos de horário.\n\n";
 
-console.log(
-"✗",
-d.disciplina,
-"| Falta:",
-d.pendencias.join(", ")
-);
+        conflitos.forEach(c=>{
 
-});
+            mensagem +=
+`${c.disciplina1}
 
-/* ===== Alert ===== */
+X
 
-let msg="";
+${c.disciplina2}
 
-if(
-liberadas.length
-){
+${c.dia} ${c.horario}
 
-msg+=
-"DISCIPLINAS LIBERADAS\n\n"+
-liberadas.join("\n");
+`;
 
-}
+        });
 
-if(
-bloqueadas.length
-){
+        alert(mensagem);
+        return;
 
-msg+=
-"\n\nDISCIPLINAS BLOQUEADAS\n\n";
+    }
 
-bloqueadas.forEach(d=>{
+    /* ==========================================
+       VERIFICA PRÉ-REQUISITOS
+    ========================================== */
 
-msg+=
+    let liberadas = [];
+    let bloqueadas = [];
+
+    selecionadas.forEach(cb=>{
+
+        const label = cb.parentElement;
+
+        // Nome da disciplina (sem o span do horário)
+        const disciplina = Array.from(label.childNodes)
+            .filter(node=>node.nodeType===Node.TEXT_NODE)
+            .map(node=>node.textContent.trim())
+            .join(" ")
+            .trim();
+
+        const reqs = prerequisitos[disciplina];
+
+        if(!reqs){
+
+            liberadas.push(disciplina);
+            return;
+
+        }
+
+        const pendentes = reqs.filter(req=>
+            !disciplinasConcluidas.includes(req)
+        );
+
+        if(pendentes.length===0){
+
+            liberadas.push(disciplina);
+
+        }else{
+
+            bloqueadas.push({
+
+                disciplina,
+                pendencias:pendentes
+
+            });
+
+        }
+
+    });
+
+    /* ==========================================
+       CONSOLE
+    ========================================== */
+
+    console.clear();
+
+    console.log("======== DISCIPLINAS LIBERADAS ========");
+
+    liberadas.forEach(d=>{
+
+        console.log("✓", d);
+
+    });
+
+    console.log("======== DISCIPLINAS BLOQUEADAS ========");
+
+    bloqueadas.forEach(d=>{
+
+        console.log(
+            "✗",
+            d.disciplina,
+            "| Falta:",
+            d.pendencias.join(", ")
+        );
+
+    });
+
+    /* ==========================================
+       MENSAGEM
+    ========================================== */
+
+    let msg = "";
+
+    if(liberadas.length){
+
+        msg +=
+        "DISCIPLINAS LIBERADAS\n\n"+
+        liberadas.join("\n");
+
+    }
+
+    if(bloqueadas.length){
+
+        msg += "\n\nDISCIPLINAS BLOQUEADAS\n\n";
+
+        bloqueadas.forEach(d=>{
+
+            msg +=
 `${d.disciplina}
 (Falta: ${d.pendencias.join(", ")})
 
 `;
 
-});
+        });
 
-}
+    }
 
-alert(msg);
+    const gerar = confirm(
+        msg + "\n\nDeseja gerar o relatório em PDF?"
+    );
 
-/* PDF */
+    if(gerar){
 
-gerarPDFHistorico(
-liberadas,
-bloqueadas
-);
+        gerarPDFHistorico(
+            liberadas,
+            bloqueadas
+        );
+
+    }
 
 }
 
@@ -702,24 +974,55 @@ y
 
 y+=10;
 
-disciplinasLiberadas
-.forEach(d=>{
+disciplinasLiberadas.forEach(d => {
 
-if(y>270){
+    if (y > 270) {
 
-doc.addPage();
+        doc.addPage();
+        y = 20;
 
-y=20;
+    }
 
-}
+    // Nome da disciplina
+    doc.text("• " + d, 25, y);
 
-doc.text(
-"• "+d,
-25,
-y
-);
+    // Procura o código da disciplina no HTML
+    const checkbox = Array.from(
+        document.querySelectorAll("input[data-codigo]")
+    ).find(cb => {
 
-y+=8;
+        const nome = Array.from(cb.parentElement.childNodes)
+            .filter(node => node.nodeType === Node.TEXT_NODE)
+            .map(node => node.textContent.trim())
+            .join(" ")
+            .trim();
+
+        return nome === d;
+
+    });
+
+    // Imprime o dia e horário somente para as disciplinas liberadas
+    if (checkbox) {
+
+        const codigo = checkbox.dataset.codigo;
+
+        if (horarios[codigo]) {
+
+            const textoHorario =
+                `${horarios[codigo].dia} • ${horarios[codigo].horario}`;
+
+            // Alinha à direita na mesma linha
+            doc.text(
+                textoHorario,
+                140,
+                y
+            );
+
+        }
+
+    }
+
+    y += 8;
 
 });
 
@@ -780,5 +1083,151 @@ doc.save(
 function LimparTeste(){
 
 location.reload();
+
+}
+
+function inserirDias() {
+
+    document.querySelectorAll("input[data-codigo]").forEach(input => {
+
+        const codigo = input.dataset.codigo;
+
+        if (!horarios[codigo]) return;
+
+        const info = horarios[codigo];
+
+        const span = document.createElement("span");
+        span.className = "diaSemana";
+        span.textContent = `${info.dia} • ${info.horario}`;
+
+        input.parentElement.appendChild(span);
+
+    });
+
+}
+
+function loginAdmin(){
+
+    // ======================================
+    // SAIR DO MODO ADMIN
+    // ======================================
+
+    if(modoAdmin){
+
+        if(!confirm("Deseja sair do modo administrador?")){
+            return;
+        }
+
+        modoAdmin = false;
+
+        document.body.classList.remove("admin");
+
+        document.getElementById("modoAdmin").style.display = "none";
+
+        document.getElementById("btnAdmin").innerHTML =
+        "🔒 Área Administrativa";
+
+        document.getElementById("btnAdmin").style.background =
+        "#ff9800";
+
+        // Bloqueia novamente apenas as disciplinas concluídas
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
+
+            if(cb.checked){
+
+                cb.disabled = true;
+
+            }else{
+
+                cb.disabled = false;
+
+            }
+
+        });
+
+        alert("Modo administrador desativado.");
+
+        return;
+
+    }
+
+    // ======================================
+    // LOGIN
+    // ======================================
+
+    const senha = prompt("Senha do Coordenador:");
+
+    if(senha !== "123456"){
+
+        alert("Senha incorreta.");
+
+        return;
+
+    }
+
+    // ======================================
+    // ATIVA MODO ADMIN
+    // ======================================
+
+    modoAdmin = true;
+
+    document.body.classList.add("admin");
+
+    document.getElementById("modoAdmin").style.display = "flex";
+
+    document.getElementById("btnAdmin").innerHTML =
+    "🔓 Sair do Modo Admin";
+
+    document.getElementById("btnAdmin").style.background =
+    "#d32f2f";
+
+    // Libera todos os checkboxes
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb=>{
+
+        cb.disabled = false;
+
+        cb.onchange = function(){
+
+            if(!modoAdmin) return;
+
+            const label = this.parentElement;
+
+            // Nome da disciplina
+            const disciplina = Array.from(label.childNodes)
+            .filter(node=>node.nodeType===Node.TEXT_NODE)
+            .map(node=>node.textContent.trim())
+            .join(" ")
+            .trim();
+
+            if(this.checked){
+
+                // Cor laranja
+                label.classList.add("adicionadaAdmin");
+
+                // Adiciona à lista de disciplinas concluídas
+                if(!disciplinasConcluidas.includes(disciplina)){
+
+                    disciplinasConcluidas.push(disciplina);
+
+                }
+
+            }else{
+
+                // Remove cor
+                label.classList.remove("adicionadaAdmin");
+
+                // Remove da lista
+                disciplinasConcluidas =
+                disciplinasConcluidas.filter(d=>d!==disciplina);
+
+            }
+
+            console.log(disciplinasConcluidas);
+
+        };
+
+    });
+
+    alert("Modo administrador ativado.");
 
 }
