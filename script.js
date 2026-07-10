@@ -388,42 +388,53 @@ alert(
 /* =====================================================
    EXTRAI NOME DO ALUNO
 ===================================================== */
+function extrairNomeAluno(palavras){
 
-function extrairNomeAluno(
-palavras
-){
-
-const textoCompleto=
-palavras.join(" ");
-
-const regex=
-/([A-ZÀ-Ú][A-Za-zÀ-ú\s]+)\s*\(\d{5}[A-Z]{2}\.[A-Z]{2}\d+\)/i;
-
-const resultado=
-textoCompleto.match(
-regex
-);
-
-if(
-resultado &&
-resultado[1]
-){
-
-let nome=
-resultado[1]
+const textoCompleto =
+palavras.join(" ")
+.replace(/\s+/g," ")
 .trim();
 
-/* remove palavras indesejadas */
 
-nome=
-nome.replace(
-/^(Matriculado|MATRICULADO|Aluno|ALUNO)\s+/i,
-""
+console.log(
+"Texto completo:",
+textoCompleto
 );
 
-return nome;
+
+// Procura nome antes da matrícula
+
+const regex =
+/([A-ZÀ-Ú][A-Za-zÀ-ú\s]+?)\s*\(\d{5}[A-Z]{2}\.[A-Z]{3,}\d+\)/;
+
+
+const resultado =
+textoCompleto.match(regex);
+
+
+if(resultado){
+
+return resultado[1].trim();
 
 }
+
+
+// Segunda tentativa usando campo Nome:
+
+const regexNome =
+/Nome\s*:\s*([A-ZÀ-Ú][A-Za-zÀ-ú\s]+)/i;
+
+
+const resultadoNome =
+textoCompleto.match(regexNome);
+
+
+if(resultadoNome){
+
+return resultadoNome[1].trim();
+
+}
+
 
 return "Aluno não identificado";
 
