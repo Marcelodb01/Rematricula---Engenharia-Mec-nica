@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>Sistema de Rematrícula - Engenharia Mecânica</title>
 
+
 <link rel="stylesheet" href="style.css">
 
 <!-- PDF.js -->
@@ -40,34 +41,93 @@ Sistema de Rematrícula Acadêmica
 
 </div>
 
+<
 <div class="legenda">
-  <span class="leg-item aprovado">
-    <span class="cor"></span> Aprovado
-  </span>
 
-  <span class="leg-item aprovado-reprovacao">
-    <span class="cor"></span> Aprovado após reprovação
-  </span>
+    <span class="leg-item reprovado">
+        <span class="cor"></span> Reprovado
+    </span>
 
-  <span class="leg-item aproveitamento">
-    <span class="cor"></span> Aproveitamento
-  </span>
+    <span class="leg-item aprovado">
+        <span class="cor"></span> Aprovado
+    </span>
 
-  <span class="leg-item reprovado">
-    <span class="cor"></span> Reprovado
-  </span>
+    <span class="leg-item aprovado-reprovacao">
+        <span class="cor"></span> Aprovado após reprovação
+    </span>
+
+    <span class="leg-item aproveitamento">
+        <span class="cor"></span> Aproveitamento
+    </span>
+
+</div>
+
+<div id="modoAdmin" class="modoAdmin" style="display:none;">
+    🔒 MODO ADMINISTRADOR ATIVO
 </div>
 
 
+<div class="buscaAluno">
 
-<input type="file" id="arquivo" accept="application/pdf">
+<label for="codigoAluno">
+Matrícula do Aluno
+</label>
 
-<button id="btnLimpar" type="button" onclick="LimparTeste()" disabled>Limpar  
+<input
+type="text"
+id="codigoAluno"
+placeholder="Ex: 20241VA.EM0006"
+autocomplete="off"
+>
+
+<button
+id="btnBuscarHistorico"
+type="button"
+onclick="buscarHistorico()"
+>
+🔍 Buscar Histórico
 </button>
-<button id="btnMatricula" type="button" onclick="Matricula()" disabled> Fazer Matricula  
+
+
+<button
+id="btnLimpar"
+type="button"
+onclick="LimparTeste()"
+disabled>
+🗑 Limpar
 </button>
+
+<button
+id="btnMatricula"
+type="button"
+onclick="Matricula()"
+disabled>
+📚 Fazer Matrícula
+</button>
+
+<button
+id="btnAdmin"
+onclick="loginAdmin()">
+🔒 Área Coordenador
+</button>
+
+</div>
+
 
 <hr>
+
+<div class="areaAluno">
+
+<p id="dadosAluno">
+👤 Aluno: <strong>Não carregado</strong>
+</p>
+
+<div id="loadingBusca" style="display:none;">
+    <span class="spinner"></span>
+    Buscando histórico do aluno...
+</div>
+
+</div>
 
 <div class="grid-container">
 <div class="header"><h3>Matriz do Curso</h3></div>
