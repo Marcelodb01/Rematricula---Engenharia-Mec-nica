@@ -137,7 +137,6 @@ fetch("horarios.json")
 /* =====================================================
    BUSCAR HISTÓRICO
 ===================================================== */
-
 async function buscarHistorico(){
 
 const codigo=
@@ -147,6 +146,7 @@ document
 )
 .value
 .trim();
+
 
 if(!codigo){
 
@@ -158,38 +158,42 @@ return;
 
 }
 
+
 // Cursor de espera
-document.body.style.cursor = "wait";
+document.body.style.cursor="wait";
+
 
 try{
 
+
 const caminho=
 `./Alunos/${codigo}.pdf`;
+
 
 console.log(
 "Buscando:",
 caminho
 );
 
+
+let arquivo=null;
+
+
+// tenta buscar automaticamente
+
 const resposta=
-await fetch(
-caminho
-);
+await fetch(caminho);
 
-if(
-!resposta.ok
-){
 
-throw new Error(
-"Arquivo não encontrado"
-);
 
-}
+if(resposta.ok){
+
 
 const blob=
 await resposta.blob();
 
-const arquivo=
+
+arquivo=
 new File(
 [blob],
 `${codigo}.pdf`,
@@ -198,37 +202,94 @@ type:"application/pdf"
 }
 );
 
+
+console.log(
+"Histórico encontrado automaticamente"
+);
+
+
+}
+else{
+
+
+console.log(
+"Histórico não encontrado na pasta"
+);
+
+
+// abre busca no computador
+
+alert(
+"⚠️ Histórico não encontrado no sistema.\nSelecione o arquivo PDF manualmente."
+);
+
+
+arquivo=
+await selecionarHistorico();
+
+
+
+if(!arquivo){
+
+throw new Error(
+"Nenhum arquivo selecionado"
+);
+
+}
+
+
+}
+
+
+
+// carrega histórico
+
 await lerHistoricoPDF(
 arquivo
 );
+
+
 
 document.getElementById(
 "btnLimpar"
 ).disabled=false;
 
+
 document.getElementById(
 "btnMatricula"
 ).disabled=false;
 
-document.body.style.cursor = "default";
+
+document.body.style.cursor="default";
+
+
 alert(
-   
 "✅ Histórico carregado."
 );
 
+
+
 }
+
 catch(e){
+
 
 console.log(
 "Erro:",
 e
 );
 
+
+document.body.style.cursor="default";
+
+
 alert(
-"⚠️ Histórico não encontrado."
+"⚠️ Histórico não carregado."
 );
 
+
 }
+
 
 }
 
@@ -1229,5 +1290,42 @@ function loginAdmin(){
     });
 
     alert("Modo administrador ativado.");
+
+}
+
+function selecionarHistorico(){
+
+return new Promise((resolve)=>{
+
+const input=
+document.getElementById(
+"arquivoHistorico"
+);
+
+
+input.value="";
+
+
+input.onchange=()=>{
+
+if(input.files.length){
+
+resolve(
+input.files[0]
+);
+
+}else{
+
+resolve(null);
+
+}
+
+};
+
+
+input.click();
+
+
+});
 
 }
