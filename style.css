@@ -165,6 +165,175 @@ rgba(0,0,0,.08);
 
 }
 
+.buscaAluno{
+
+display:flex;
+align-items:center;
+gap:15px;
+
+padding:20px;
+
+margin-bottom:20px;
+
+background:white;
+
+border-radius:20px;
+
+box-shadow:
+0 5px 15px rgba(0,0,0,.08);
+
+flex-wrap:wrap;
+
+}
+
+.buscaAluno label{
+
+font-weight:bold;
+
+}
+
+.buscaAluno input{
+
+width:220px;
+
+padding:12px;
+
+border-radius:10px;
+
+border:1px solid #ccc;
+
+font-size:15px;
+
+transition:.3s;
+
+}
+
+.buscaAluno input:focus{
+
+border-color:#3949ab;
+
+outline:none;
+
+box-shadow:
+0 0 8px
+rgba(
+57,
+73,
+171,
+0.3
+);
+
+}
+
+.areaAluno{
+
+margin:10px auto 20px auto;
+padding:12px;
+
+width:300px;
+
+background:white;
+
+border-radius:12px;
+
+box-shadow:
+0 4px 12px rgba(0,0,0,.1);
+
+text-align:center;
+
+font-size:16px;
+
+font-weight:600;
+
+}
+
+/* =========================
+   BOTÕES CENTRALIZADOS
+========================= */
+
+.areaBotoes{
+
+display:flex;
+justify-content:center;
+align-items:center;
+gap:15px;
+
+margin:25px auto;
+
+flex-wrap:wrap;
+
+}
+
+.areaBotoes button{
+
+padding:12px 25px;
+
+border:none;
+border-radius:12px;
+
+font-size:15px;
+font-weight:600;
+
+cursor:pointer;
+
+transition:.3s;
+
+box-shadow:
+0 4px 12px rgba(0,0,0,.15);
+
+}
+
+#btnLimpar{
+
+background:#ef5350;
+color:white;
+
+}
+
+#btnMatricula{
+
+background:#1565c0;
+color:white;
+
+}
+
+.areaBotoes button:hover{
+
+transform:translateY(-3px);
+
+box-shadow:
+0 8px 18px rgba(0,0,0,.25);
+
+}
+
+.areaBotoes button:disabled{
+
+opacity:.5;
+cursor:not-allowed;
+
+transform:none;
+
+}
+
+#dadosAluno strong{
+
+color:#1565c0;
+
+}
+
+#btnBuscarHistorico{
+
+background:
+linear-gradient(
+135deg,
+#1976d2,
+#42a5f5
+);
+
+color:white;
+
+}
+
 
 /* ======================================
    LEGENDA
@@ -172,23 +341,13 @@ rgba(0,0,0,.08);
 
 .legenda{
 
-display:flex;
-
-flex-wrap:wrap;
-
-gap:12px;
-
-margin:20px 0;
-
-padding:15px;
-
-background:white;
-
-border-radius:15px;
-
-box-shadow:
-0 4px 15px
-rgba(0,0,0,.08);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    text-align: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
 
 }
 
@@ -628,5 +787,131 @@ height:70px;
 font-size:22px;
 
 }
+
+}
+
+.coluna label{
+    display:block;
+    padding:4px 0;
+}
+
+.diaSemana{
+    float:right;
+    background:#0d6efd;
+    color:white;
+    font-size:11px;
+    padding:3px 8px;
+    border-radius:12px;
+    font-weight:bold;
+}
+
+#loadingBusca{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-top:10px;
+    color:#0b5394;
+    font-weight:bold;
+}
+
+.spinner{
+    width:18px;
+    height:18px;
+    border:3px solid #d9d9d9;
+    border-top:3px solid #0b5394;
+    border-radius:50%;
+    animation:girar .8s linear infinite;
+}
+
+@keyframes girar{
+
+    from{
+        transform:rotate(0deg);
+    }
+
+    to{
+        transform:rotate(360deg);
+    }
+
+}
+.acoes{
+    display:flex;
+    gap:12px;
+    justify-content:center;
+    align-items:center;
+    margin:20px 0;
+    flex-wrap:wrap;
+}
+
+.acoes button{
+    min-width:170px;
+}
+
+.adicionadaAdmin{
+
+    background:#ff9800 !important;
+    color:white; 
+    font-weight:bold;
+    padding:3px 6px;
+    border-radius:5px;
+
+}
+
+.modo-admin{
+
+   display:flex;
+    justify-content:center;
+    align-items:center;
+
+    margin:15px auto;
+
+    width:350px;
+
+    background:#d32f2f;
+
+    color:white;
+
+    font-weight:bold;
+
+    padding:10px;
+
+    border-radius:8px;
+
+}
+
+body.admin{
+
+    border:6px solid #d32f2f;
+
+}
+
+/* ==========================================
+   BOTÃO ÁREA ADMINISTRATIVA
+========================================== */
+
+#btnAdmin{
+
+    background:#ff9800;
+    color:white;
+
+    border:none;
+
+    padding:10px 18px;
+
+    border-radius:6px;
+
+    font-size:15px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+#btnAdmin:hover{
+
+    background:#f57c00;
 
 }
